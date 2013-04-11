@@ -3,6 +3,7 @@ from django.template import loader, Context
 from django.utils.translation import ugettext_lazy
 from django.db import models
 
+
 content_type_choices = (
     'text/html',
     'text/plain',
@@ -22,19 +23,19 @@ class ZeroTemplate(models.Model):
     path = models.CharField(
         ugettext_lazy('path'),
         blank=True,
-        null=True,
+        default='',
         help_text=ugettext_lazy('Example: /my-page/. Optional'),
         max_length=200,
     )
     content = models.TextField(
         ugettext_lazy('content'),
         blank=True,
-        null=True,
+        default='',
     )
     comments = models.CharField(
         ugettext_lazy('comments'),
         blank=True,
-        null=True,
+        default='',
         help_text=ugettext_lazy('internal use only'),
         max_length=4800,
     )
