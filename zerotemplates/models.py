@@ -55,9 +55,9 @@ class ZeroTemplate(models.Model):
                 'content': unicode(e),
             })
 
-    def save(self, *args, **kwargs):
-        self.clean()
-        super(ZeroTemplate, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     self.clean()
+    #     super(ZeroTemplate, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.filename
