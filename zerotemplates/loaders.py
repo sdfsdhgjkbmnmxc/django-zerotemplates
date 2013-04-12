@@ -15,7 +15,7 @@ class DbLoader(BaseLoader):
         try:
             zt = ZeroTemplate.objects.get(filename=template_name)
         except ZeroTemplate.DoesNotExist:
-            msg = ugettext('Template {} not found').format(template_name)
+            msg = ugettext('Template {0} not found').format(template_name)
             raise TemplateDoesNotExist(msg)
         return zt.content, zt.filename
 
