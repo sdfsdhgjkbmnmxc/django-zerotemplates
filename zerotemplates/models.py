@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.template import loader, Context
+from django.template import loader, Context, TemplateSyntaxError
 from django.utils.translation import ugettext_lazy
 from django.db import models
 
@@ -51,7 +51,7 @@ class ZeroTemplate(models.Model):
         self.path = (self.path or '').strip().lower()
         try:
             loader.get_template_from_string(self.content).render(Context())
-        except Exception as e:
+        except TemplateSyntaxError as e:
             raise ValidationError({
                 'content': unicode(e),
             })
