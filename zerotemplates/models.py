@@ -12,13 +12,6 @@ content_type_choices = (
 )
 
 
-class SpareImage(models.Model):
-    image = models.ImageField(upload_to='spares')
-
-    def __unicode__(self):
-        return self.image.url
-
-
 class ZeroTemplate(models.Model):
     filename = models.CharField(
         ugettext_lazy('template name'),
@@ -74,3 +67,12 @@ class ZeroTemplate(models.Model):
         verbose_name = ugettext_lazy('template')
         verbose_name_plural = ugettext_lazy('templates')
         ordering = ('filename',)
+
+
+class SpareImage(models.Model):
+    zero_template = models.ForeignKey(ZeroTemplate)
+    image = models.ImageField(upload_to='spares')
+
+    def __unicode__(self):
+        return self.image.url
+
