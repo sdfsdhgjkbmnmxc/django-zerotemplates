@@ -4,7 +4,7 @@ from django.forms import Textarea
 from django.utils.safestring import mark_safe
 from django.db.models import TextField
 
-from zerotemplates.models import ZeroTemplate
+from zerotemplates.models import ZeroTemplate, SpareImage
 
 
 class CodeMirrorTextArea(Textarea):
@@ -35,6 +35,10 @@ class CodeMirrorTextArea(Textarea):
         js = ['codemirror/js/codemirror.js']
 
 
+class ImageInlineAdmin(admin.StackedInline):
+    model = SpareImage
+
+
 class ZeroTemplateAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = (
@@ -48,6 +52,8 @@ class ZeroTemplateAdmin(admin.ModelAdmin):
             # 'widget': Textarea(attrs={'cols': 100, 'rows': 30}),
         },
     }
-
+    inlines = [
+        ImageInlineAdmin,
+    ]
 
 admin.site.register(ZeroTemplate, ZeroTemplateAdmin)
