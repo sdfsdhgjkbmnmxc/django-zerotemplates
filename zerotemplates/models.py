@@ -76,3 +76,7 @@ class SpareImage(models.Model):
     def __unicode__(self):
         return self.image.url
 
+    class Meta:
+        verbose_name = ugettext_lazy('image')
+        verbose_name_plural = ugettext_lazy('images')
+        ordering = ('filename',)

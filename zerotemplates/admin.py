@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.forms import Textarea
 from django.utils.safestring import mark_safe
 from django.db.models import TextField
+from django.utils.translation import ugettext_lazy
 
 from zerotemplates.models import ZeroTemplate, SpareImage
 
@@ -37,6 +38,20 @@ class CodeMirrorTextArea(Textarea):
 
 class ImageInlineAdmin(admin.StackedInline):
     model = SpareImage
+    readonly_fields = (
+        'code',
+    )
+
+    def code(self, obj):
+        if obj:
+            return u'<img src="{0}" width="{1}" height="{2}" alt="">'.format(
+                obj.image.url,
+                obj.image.width,
+                obj.image.height,
+            )
+        else:
+            return ''
+    code.short_description = ugettext_lazy('HTML')
 
 
 class ZeroTemplateAdmin(admin.ModelAdmin):
@@ -55,5 +70,21 @@ class ZeroTemplateAdmin(admin.ModelAdmin):
     inlines = [
         ImageInlineAdmin,
     ]
+    fieldsets = (
+        (None, {
+            'fields': (
+                'filename',
+                'comments',
+                'content',
+            )
+        }),
+        (ugettext_lazy('Render template as site page'), {
+            'fields': (
+                'path',
+                'content_type',
+            )
+        }),
+    )
+
 
 admin.site.register(ZeroTemplate, ZeroTemplateAdmin)
