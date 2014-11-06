@@ -79,4 +79,4 @@ class SpareImage(models.Model):
     class Meta:
         verbose_name = ugettext_lazy('image')
         verbose_name_plural = ugettext_lazy('images')
-        ordering = ('filename',)
+        ordering = ('-id',)
