@@ -74,7 +74,7 @@ class SpareImage(models.Model):
     image = models.ImageField(upload_to='spares')
 
     def __unicode__(self):
-        return self.image.url
+        return u'#{}'.format(self.id)
 
     class Meta:
         verbose_name = ugettext_lazy('image')

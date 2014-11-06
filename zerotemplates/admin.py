@@ -36,7 +36,7 @@ class CodeMirrorTextArea(Textarea):
         js = ['codemirror/js/codemirror.js']
 
 
-class ImageInlineAdmin(admin.StackedInline):
+class ImageInlineAdmin(admin.TabularInline):
     model = SpareImage
     readonly_fields = (
         'code',
@@ -44,7 +44,7 @@ class ImageInlineAdmin(admin.StackedInline):
 
     def code(self, obj):
         if obj:
-            return u'<img src="{0}" width="{1}" height="{2}" alt="">'.format(
+            return u'<textarea style="width:50%"><img src="{0}" width="{1}" height="{2}" alt=""></textarea>'.format(
                 obj.image.url,
                 obj.image.width,
                 obj.image.height,
