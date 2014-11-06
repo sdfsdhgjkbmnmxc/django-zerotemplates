@@ -58,3 +58,12 @@ msgstr "шаблон"
 #: models.py:68
 msgid "templates"
 msgstr "шаблоны"
+
+msgid "Render template as site page"
+msgstr "Отображать шаблон как страницу сайта"
+
+msgid "image"
+msgstr "картинка"
+
+msgid "images"
+msgstr "картинки"
