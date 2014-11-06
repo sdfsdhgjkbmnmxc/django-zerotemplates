@@ -14,6 +14,10 @@ setup(
     ],
     install_requires=open('requirements.txt').readlines(),
     package_data={
-        'zerotemplates': ['locale/ru/LC_MESSAGES/*'],
+        'zerotemplates': [
+            'locale/ru/LC_MESSAGES/*',
+            'static/codemirror/css/*',
+            'static/codemirror/js/*',
+        ],
     },
 )
