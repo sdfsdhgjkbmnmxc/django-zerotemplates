@@ -13,4 +13,7 @@ setup(
         'zerotemplates',
     ],
     install_requires=open('requirements.txt').readlines(),
+    package_data={
+        'zerotemplates': ['locale/ru/LC_MESSAGES/*'],
+    },
 )

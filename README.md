@@ -3,4 +3,19 @@ django-zerotemplates
 
 Simple analog of django-dbtemplates.
 
-Add zerotemplates to INNSTALLED_APPS and follow the exceptions.
+Install:
+```
+pip install git+https://github.com/sdfsdhgjkbmnmxc/django-zerotemplates.git#egg=zerotemplates
+```
+
+settings.py:
+```python
+    INSTALLED_APPS = (
+        # ....
+        'zerotemplates',
+    )
+    TEMPLATE_LOADERS = (
+        # ...
+        'zerotemplates.loaders.DbLoader',
+    )
+```
