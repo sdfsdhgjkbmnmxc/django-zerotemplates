@@ -67,3 +67,15 @@ msgstr "картинка"
 
 msgid "images"
 msgstr "картинки"
+
+msgid "Use WYSIWG editor"
+msgstr "Использовать визуальный редактор"
+
+msgid "Can\\'t use WYSIWG editor for django templates"
+msgstr "Нельзя использовать визуальный редактор для шаблонов"
+
+msgid "Press \"Save\" for apply"
+msgstr "Нажмите «Сохранить», чтобы увидеть изменения"
+
+msgid "Special"
+msgstr "Специальные возможности"

@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.template import loader, Context, TemplateSyntaxError
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy, ugettext
 from django.db import models
 
 
@@ -45,15 +45,27 @@ class ZeroTemplate(models.Model):
         max_length=50,
         choices=[(x, x) for x in content_type_choices],
     )
+    use_wysiwyg = models.BooleanField(
+        ugettext_lazy('Use WYSIWG editor'),
+        help_text=ugettext_lazy('Press "Save" for apply'),
+        default=False,
+    )
 
     def clean(self):
         self.filename = (self.filename or '').strip().lower()
         self.path = (self.path or '').strip().lower()
+
         try:
-            loader.get_template_from_string(self.content).render(Context())
+            content = loader.get_template_from_string(self.content).render(Context())
         except TemplateSyntaxError as e:
             raise ValidationError({
                 'content': unicode(e),
+            })
+
+        if self.use_wysiwyg and content.strip() != self.content.strip():
+            self.use_wysiwyg = False
+            raise ValidationError({
+                'use_wysiwyg': ugettext('Can\'t use WYSIWG editor for django templates'),
             })
 
     # def save(self, *args, **kwargs):

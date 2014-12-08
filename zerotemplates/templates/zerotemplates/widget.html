@@ -1,0 +1,31 @@
+<div class="django-ckeditor-widget django-ckeditor-widget-{{ id }}" data-field-id="{{ id }}">
+    <textarea{{ final_attrs|safe }} data-processed="0" data-id="{{ id }}" data-type="maybeckeditortype">{{ value }}</textarea>
+</div>
+<script type="text/javascript">
+$(function(){
+    var $t = $('{{ id }}');
+    if (
+        $('#id_{{ checker }}').is(':checked') &&
+        $('.errors.field-{{ checker }}').length == 0
+    ) {
+        $t.css({display: 'inline-block'});
+
+        $('.django-ckeditor-widget-{{ id }}').css({paddingLeft: '105px'});
+
+        $t.data('type', 'ckeditortype');
+        $t.data('processed', '1');
+        CKEDITOR.replace('{{ id }}', {{ config|safe }});
+    } else {
+        var editor = CodeMirror.fromTextArea('{{ id }}', {
+            path: "{{ media_prefix }}js/",
+            parserfile: "parsedjango.js",
+            stylesheet: "{{ media_prefix }}css/django.css",
+            continuousScanning: 500,
+            height: "40.2em",
+            tabMode: "shift",
+            indentUnit: 4,
+            lineNumbers: false
+        });
+    }
+});
+</script>

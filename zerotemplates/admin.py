@@ -1,39 +1,90 @@
+from ckeditor.widgets import CKEditorWidget, json_encode
 from django.conf import settings
 from django.contrib import admin
-from django.forms import Textarea
+from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
+from django.utils.encoding import force_text
+from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.db.models import TextField
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext_lazy, get_language
 
 from zerotemplates.models import ZeroTemplate, SpareImage
 
 
-class CodeMirrorTextArea(Textarea):
-    def render(self, name, value, attrs=None):
-        return mark_safe(u''.join([
-            super(CodeMirrorTextArea, self).render(name, value, attrs),
-            u"""
-                <script type="text/javascript">
-                  var editor = CodeMirror.fromTextArea('id_%(name)s', {
-                    path: "%(media_prefix)sjs/",
-                    parserfile: "parsedjango.js",
-                    stylesheet: "%(media_prefix)scss/django.css",
-                    continuousScanning: 500,
-                    height: "40.2em",
-                    tabMode: "shift",
-                    indentUnit: 4,
-                    lineNumbers: false
-                  });
-                </script>
-            """ % dict(media_prefix=settings.STATIC_URL + 'codemirror/',
-                       name=name)
-        ]))
+class CodeMirrorOrCKEditorTextArea(CKEditorWidget):
+    checker = 'use_wysiwyg'
+
+    # if value is None:
+    #     value = ''
+    #     final_attrs = self.build_attrs(attrs, name=name)
+    #     self.config.setdefault('filebrowserUploadUrl', reverse('ckeditor_upload'))
+    #     self.config.setdefault('filebrowserBrowseUrl', reverse('ckeditor_browse'))
+    #     if not self.config.get('language'):
+    #         self.config['language'] = get_language()
+    #
+    #     return mark_safe(render_to_string('ckeditor/widget.html', {
+    #         'final_attrs': flatatt(final_attrs),
+    #         'value': conditional_escape(force_text(value)),
+    #         'id': final_attrs['id'],
+    #         'config': json_encode(self.config),
+    #         'external_plugin_resources' : self.external_plugin_resources
+    #     }))
+    # def render(self, name, value, attrs=None):
+    #     # return  mark_safe(u''.join([
+    #     #     super(CodeMirrorTextArea, self).render(name, value, attrs),
+    #     #
+    #     #     """ % dict(media_prefix=settings.STATIC_URL + 'codemirror/',
+    #     #                name=name)
+    #     # ]))
+    #     pass
+
+    def render(self, name, value, attrs={}):
+        from django.forms.utils import flatatt
+        if value is None:
+            value = ''
+        final_attrs = self.build_attrs(attrs, name=name)
+        self.config.setdefault('filebrowserUploadUrl', reverse('ckeditor_upload'))
+        self.config.setdefault('filebrowserBrowseUrl', reverse('ckeditor_browse'))
+        if not self.config.get('language'):
+            self.config['language'] = get_language()
+
+        return mark_safe(render_to_string('zerotemplates/widget.html', {
+            'checker': self.checker,
+            'final_attrs': flatatt(final_attrs),
+            'value': conditional_escape(force_text(value)),
+            'id': final_attrs['id'],
+            'config': json_encode(self.config),
+            'external_plugin_resources': self.external_plugin_resources,
+            'media_prefix': settings.STATIC_URL + 'codemirror/',
+        }))
 
     class Media:
+        js = ()
+        jquery_url = getattr(settings, 'CKEDITOR_JQUERY_URL', None)
+        if jquery_url:
+            js += (jquery_url, )
+        try:
+            js += (
+                settings.STATIC_URL + 'ckeditor/ckeditor/ckeditor.js',
+                settings.STATIC_URL + 'ckeditor/ckeditor-init.js',
+            )
+        except AttributeError:
+            raise ImproperlyConfigured("django-ckeditor requires \
+                    CKEDITOR_MEDIA_PREFIX setting. This setting specifies a \
+                    URL prefix to the ckeditor JS and CSS media (not \
+                    uploaded media). Make sure to use a trailing slash: \
+                    CKEDITOR_MEDIA_PREFIX = '/media/ckeditor/'")
+
+        js += (
+            settings.STATIC_URL + 'codemirror/js/codemirror.js',
+        )
         css = {
-            'screen': ['codemirror/css/editor.css']
+            'screen': [
+                settings.STATIC_URL + 'codemirror/css/editor.css',
+            ]
         }
-        js = ['codemirror/js/codemirror.js']
 
 
 class ImageInlineAdmin(admin.TabularInline):
@@ -57,13 +108,17 @@ class ImageInlineAdmin(admin.TabularInline):
 class ZeroTemplateAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = (
+        'comments',
         'filename',
         'path',
+    )
+    list_display_links = (
         'comments',
+        'filename',
     )
     formfield_overrides = {
         TextField: {
-            'widget': CodeMirrorTextArea(),
+            'widget': CodeMirrorOrCKEditorTextArea(),
             # 'widget': Textarea(attrs={'cols': 100, 'rows': 30}),
         },
     }
@@ -73,8 +128,8 @@ class ZeroTemplateAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
-                'filename',
                 'comments',
+                'filename',
                 'content',
             )
         }),
@@ -82,6 +137,11 @@ class ZeroTemplateAdmin(admin.ModelAdmin):
             'fields': (
                 'path',
                 'content_type',
+            )
+        }),
+        (ugettext_lazy('Special'), {
+            'fields': (
+                'use_wysiwyg',
             )
         }),
     )
