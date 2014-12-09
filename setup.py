@@ -18,6 +18,7 @@ setup(
             'locale/ru/LC_MESSAGES/*',
             'static/codemirror/css/*',
             'static/codemirror/js/*',
+            'templates/zerotemplates/*',
         ],
     },
 )
